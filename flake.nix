@@ -49,6 +49,42 @@
         };
 
         defaultPackage = packages.arweave-bin;
+
+        nixosModule = {
+          options = {
+            services.arweave = {
+              enable = pkgs.lib.mkOption {
+                type = pkgs.lib.types.bool;
+                default = false;
+                description = ''
+                  Whether to run Arweave Server.
+                '';
+              };
+            };
+          };
+
+          config = pkgs.lib.mkIf pkgs.lib.config.services.arweave.enable {
+
+            environment.systemPackages = [ pkgs.arweave-bin ];
+
+            systemd.services.arweave = {
+              description = "Arweave Server";
+              wantedBy = [ "multi-user.target" ];
+
+              serviceConfig = {
+                User = "arweave";
+                Group = "arweave";
+                ExecStart = "${pkgs.arweave-bin}/arweave/bin/start";
+                ExecStop = "${pkgs.arweave-bin}/arweave/bin/stop";
+              };
+            };
+
+            users.users.arweave = {
+              description = "Arweave Server user";
+              group = "arweave";
+            };
+          };
+        };
       }
     );
 }

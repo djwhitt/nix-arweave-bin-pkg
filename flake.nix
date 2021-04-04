@@ -32,10 +32,6 @@
             installPhase = ''
               mkdir $out
               mv * $out/
-              cat << EOH > $out/releases/2.4.1.0/vm.args
-              -name arweave@127.0.0.1
-              -setcookie arweave
-              EOH
             '';
 
             meta = with lib; {
